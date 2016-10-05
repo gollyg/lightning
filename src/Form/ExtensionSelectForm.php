@@ -148,7 +148,7 @@ class ExtensionSelectForm extends FormBase {
         $modules[] = $module;
       }
     }
-    \Drupal::state()->set('lightning_extensions', array_merge($modules, $this->extender->getModules()));
+    \Drupal::state()->set('lightning_extensions', $modules);
   }
 
 }
