@@ -48,7 +48,8 @@ function lightning_install_tasks_alter(array &$tasks, array $install_state) {
  */
 function lightning_install_extensions() {
   $batch = array();
-  foreach (\Drupal::state()->get('lightning_extensions') as $module) {
+  $modules = \Drupal::state()->get('lightning_extensions');
+  foreach ($modules as $module) {
     $batch['operations'][] = ['lightning_install_module', (array) $module];
   }
   \Drupal::state()->delete('lightning_extensions');

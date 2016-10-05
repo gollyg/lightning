@@ -105,7 +105,7 @@ class ExtensionSelectForm extends FormBase {
    *   The list of modules to be enabled.
    */
   public function buildModuleList(FormStateInterface $form_state) {
-    $extensions = $form_state->getValue('extensions');
+    $extensions = array_filter($form_state->getValue('extensions'));
     $module_list = [
       'install' => [],
       'dependencies' => [],
@@ -145,7 +145,9 @@ class ExtensionSelectForm extends FormBase {
     $modules = [];
     foreach ($module_list as $category) {
       foreach ($category as $module) {
-        $modules[] = $module;
+        if (!empty($module)) {
+          $modules[] = $module;
+        }
       }
     }
     \Drupal::state()->set('lightning_extensions', $modules);
