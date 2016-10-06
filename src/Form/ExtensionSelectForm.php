@@ -6,6 +6,8 @@ use Drupal\Core\Extension\ExtensionDiscovery;
 use Drupal\Core\Extension\InfoParserInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
+use Drupal\Core\Render\Element\Checkboxes;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\lightning\Extender;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -95,16 +97,33 @@ class ExtensionSelectForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, array &$install_state = NULL) {
     $form['#title'] = $this->t('Extensions');
 
-    $form['extensions'] = [
+    $form['modules'] = [
       '#type' => 'checkboxes',
-      '#description' => $this->t("You can choose to disable some of Lightning's functionality above. However, it is not recommended."),
     ];
     $form['experimental'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Experimental'),
       '#tree' => TRUE,
-      'extensions' => [
-        '#type' => 'checkboxes',
+    ];
+    $form['experimental']['gate'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('I understand the <a href="@url" target="_blank">potential risks of experimental modules</a>', [
+        '@url' => 'https://www.drupal.org/core/experimental',
+      ]),
+    ];
+    $form['experimental']['modules'] = [
+      '#type' => 'checkboxes',
+      '#process' => [
+        // Apply normal checkbox processing...
+        [
+          Checkboxes::class,
+          'processCheckboxes',
+        ],
+        // ...and our own special sauce.
+        [
+          __CLASS__,
+          'addExperimentalGate',
+        ],
       ],
     ];
     $form['actions'] = [
@@ -115,6 +134,7 @@ class ExtensionSelectForm extends FormBase {
       '#type' => 'actions',
     ];
 
+    // Collect information on Lightning's extensions.
     $extensions = $this->pluck(
       [
         'lightning_media',
@@ -126,48 +146,82 @@ class ExtensionSelectForm extends FormBase {
     );
     /** @var \Drupal\Core\Extension\Extension $extension */
     foreach ($extensions as $key => $extension) {
+      // Parse the extension info.
       $info = $this->infoParser->parse($extension->getPathname());
 
       if (empty($info['experimental'])) {
-        $form['extensions']['#options'][$key] = $info['name'];
-        $form['extensions']['#default_value'][] = $key;
+        $form['modules']['#options'][$key] = $info['name'];
+        $form['modules']['#default_value'][] = $key;
       }
       else {
-        $form['experimental']['extensions']['#options'][$key] = $info['name'];
+        $form['experimental']['modules']['#options'][$key] = $info['name'];
       }
     }
 
     // Don't show the experimental extensions if there aren't any (duh).
-    $form['experimental']['#access'] = (boolean) $form['experimental']['extensions']['#options'];
+    $form['modules']['#access'] = (boolean) $form['experimental']['modules']['#options'];
 
+    // If the extender configuration has a pre-chosen set of extensions, don't
+    // allow the user to choose different ones.
     $chosen_ones = $this->extender->getLightningExtensions();
     if (is_array($chosen_ones)) {
-      $form['extensions']['#disabled'] = TRUE;
-      $form['experimental']['extensions']['#disabled'] = TRUE;
-
-      $form['extensions']['#default_value'] = array_intersect(
-        array_keys($form['extensions']['#options']),
+      // Prevent selection of non-experimental extensions.
+      $form['modules']['#default_value'] = array_intersect(
+        array_keys($form['modules']['#options']),
         $chosen_ones
       );
-      $form['experimental']['extensions']['#default_value'] = array_intersect(
-        array_keys($form['experimental']['extensions']['#options']),
+      $form['modules']['#disabled'] = TRUE;
+
+      // Prevent selection of experimental extensions.
+      $form['experimental']['modules']['#default_value'] = array_intersect(
+        array_keys($form['experimental']['modules']['#options']),
         $chosen_ones
       );
+      $form['experimental']['modules']['#disabled'] = TRUE;
 
-      $form['extensions']['#description'] = $this->t('Lightning Extensions have been set by the lightning.extend.yml file in your sites directory and are disabled here as a result.');
+      // Acknowledge the experimental gate.
+      $form['experimental']['gate']['#disabled'] = TRUE;
+      $form['experimental']['gate']['#default_value'] = TRUE;
+
+      // Explain what we've done.
+      drupal_set_message($this->t('Lightning extensions have been pre-selected in the lightning.extend.yml file in your sites directory.'), 'warning');
+    }
+    else {
+      $form['modules']['#description'] = $this->t("You can choose to disable some of Lightning's functionality above. However, it is not recommended.");
     }
 
     return $form;
   }
 
   /**
+   * Process function to hide an element behind the experimental gate.
+   *
+   * @param array $element
+   *   The element to process.
+   *
+   * @return array
+   *   The processed element.
+   */
+  public static function addExperimentalGate(array $element) {
+    // The element is only visible if the experimental gate is acknowledged.
+    foreach (Element::children($element) as $key) {
+      $element[$key]['#states']['visible']['#edit-experimental-gate']['checked'] = TRUE;
+    }
+    return $element;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $modules = array_merge(
-      $form_state->getValue('extensions'),
-      $form_state->getValue(['experimental', 'extensions'])
-    );
+    $modules = $form_state->getValue('modules');
+
+    $experimental = $form_state->getValue('experimental');
+    // Only install the experimental modules if they have explicitly accepted
+    // the potential risks.
+    if ($experimental['gate']) {
+      $modules = array_merge($modules, $experimental['modules']);
+    }
     $modules = array_filter($modules);
 
     if (in_array('lightning_media', $modules)) {
