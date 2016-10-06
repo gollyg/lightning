@@ -2,7 +2,7 @@ name: Lightning Preview
 type: module
 core: 8.x
 description: Preview everything before you publish.
-package: Lightning
+package: Lightning (Experimental)
 experimental: true
 dependencies:
   - workspace
