@@ -25,11 +25,11 @@ class ExtensionSelectForm extends FormBase {
   protected $extender;
 
   /**
-   * An extension discovery helper.
+   * The Drupal application root.
    *
-   * @var \Drupal\Core\Extension\ExtensionDiscovery
+   * @var string
    */
-  protected $extensionDiscovery;
+  protected $root;
 
   /**
    * The info parser service.
@@ -52,7 +52,7 @@ class ExtensionSelectForm extends FormBase {
    */
   public function __construct(Extender $extender, $root, InfoParserInterface $info_parser, TranslationInterface $translator) {
     $this->extender = $extender;
-    $this->extensionDiscovery = new ExtensionDiscovery($root);
+    $this->root = $root;
     $this->infoParser = $info_parser;
     $this->stringTranslation = $translator;
   }
@@ -89,6 +89,29 @@ class ExtensionSelectForm extends FormBase {
    */
   protected function pluck(array $keys, array $values) {
     return array_intersect_key($values, array_combine($keys, $keys));
+  }
+
+  /**
+   * Yields info for each of Lightning's extensions.
+   */
+  protected function getExtensionInfo() {
+    $extension_discovery = new ExtensionDiscovery($this->root);
+
+    $extensions = $this->pluck(
+      [
+        'lightning_media',
+        'lightning_layout',
+        'lightning_workflow',
+        'lightning_preview',
+      ],
+      $extension_discovery->scan('module')
+    );
+
+    /** @var \Drupal\Core\Extension\Extension $extension */
+    foreach ($extensions as $key => $extension) {
+      $info = $this->infoParser->parse($extension->getPathname());
+      yield $key => $info;
+    }
   }
 
   /**
@@ -134,21 +157,7 @@ class ExtensionSelectForm extends FormBase {
       '#type' => 'actions',
     ];
 
-    // Collect information on Lightning's extensions.
-    $extensions = $this->pluck(
-      [
-        'lightning_media',
-        'lightning_layout',
-        'lightning_workflow',
-        'lightning_preview',
-      ],
-      $this->extensionDiscovery->scan('module')
-    );
-    /** @var \Drupal\Core\Extension\Extension $extension */
-    foreach ($extensions as $key => $extension) {
-      // Parse the extension info.
-      $info = $this->infoParser->parse($extension->getPathname());
-
+    foreach ($this->getExtensionInfo() as $key => $info) {
       if (empty($info['experimental'])) {
         $form['modules']['#options'][$key] = $info['name'];
         $form['modules']['#default_value'][] = $key;
@@ -158,10 +167,10 @@ class ExtensionSelectForm extends FormBase {
       }
     }
 
-    // Don't show the experimental extensions if there aren't any (duh).
+    // Hide the experimental section if there are no experimental extensions.
     $form['modules']['#access'] = (boolean) $form['experimental']['modules']['#options'];
 
-    // If the extender configuration has a pre-chosen set of extensions, don't
+    // If the extender configuration has a pre-selected set of extensions, don't
     // allow the user to choose different ones.
     $chosen_ones = $this->extender->getLightningExtensions();
     if (is_array($chosen_ones)) {
@@ -183,7 +192,7 @@ class ExtensionSelectForm extends FormBase {
       $form['experimental']['gate']['#disabled'] = TRUE;
       $form['experimental']['gate']['#default_value'] = TRUE;
 
-      // Explain what we've done.
+      // Explain ourselves.
       drupal_set_message($this->t('Lightning extensions have been pre-selected in the lightning.extend.yml file in your sites directory.'), 'warning');
     }
     else {
