@@ -37,6 +37,16 @@ class WorkspaceLock implements EventSubscriberInterface {
   protected $isReplicating = FALSE;
 
   /**
+   * The entity type IDs that are never locked.
+   *
+   * @var string[]
+   */
+  protected $unlocked = [
+    'workspace',
+    'replication_log',
+  ];
+
+  /**
    * WorkspaceLock constructor.
    *
    * @param WorkspaceManagerInterface $workspace_manager
@@ -88,8 +98,9 @@ class WorkspaceLock implements EventSubscriberInterface {
    *   Whether the entity type is locked.
    */
   public function isEntityTypeLocked($entity_type) {
-    // Workspaces are never locked, and nothing is locked during a replication.
-    if ($entity_type == 'workspace' || $this->isReplicating) {
+    // Nothing is locked during a replication. Otherwise, certain entity types
+    // are never locked.
+    if ($this->isReplicating || in_array($entity_type, $this->unlocked)) {
       return FALSE;
     }
 
