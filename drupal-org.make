@@ -137,4 +137,4 @@ projects[workspace][download][type] = git
 projects[workspace][download][url] = https://git.drupal.org/project/workspace
 projects[workspace][download][branch] = 8.x-1.x-dev
 projects[workspace][download][revision] = 6b21cbeada234f6bfb0e3ca24ddd11033578c9ff
-projects[workspace][patch][] = https://www.drupal.org/files/issues/2791789_25.patch
+projects[workspace][patch][] = https://www.drupal.org/files/issues/2791789-28.patch
