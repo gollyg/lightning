@@ -8,7 +8,6 @@
 use Behat\Gherkin\Node\TableNode;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\DrupalExtension\Context\DrupalSubContextBase;
-use Drupal\DrupalExtension\Context\DrupalSubContextInterface;
 use Drupal\DrupalExtension\Hook\Scope\EntityScope;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
@@ -17,7 +16,7 @@ use Drupal\user\Entity\User;
 /**
  * Subcontext for creating and cleaning up entities of any type.
  */
-class EntitySubContext extends DrupalSubContextBase implements DrupalSubContextInterface {
+class EntitySubContext extends DrupalSubContextBase {
 
   /**
    * Entities created during the scenario, organized by type.

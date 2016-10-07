@@ -118,6 +118,12 @@
     <exec command="${drush} config-set system.performance css.preprocess 0 --yes --format=boolean" dir="${docroot}" />
     <exec command="${drush} config-set system.performance js.preprocess 0 --yes --format=boolean" dir="${docroot}" />
     <exec command="${drush} config-set system.logging error_level all --yes" dir="${docroot}" />
+    <!--
+    Install Lightning Preview, which is not installed by default because it's experimental.
+    Enable passthru() for this as well since it has a lot of dependencies and is therefore
+    more prone to errors than other extensions.
+    -->
+    <exec command="${drush} pm-enable lightning_preview --yes" dir="${docroot}" passthru="true" />
 
     <if>
       <isset property="www.group" />

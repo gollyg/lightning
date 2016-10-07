@@ -55,6 +55,10 @@ function lightning_preview_entity_access(EntityInterface $entity, $operation, Ac
   if ($operation == 'view') {
     return AccessResult::neutral();
   }
+  // Allow filter formats to be used like normal.
+  if ($entity->getEntityTypeId() == 'filter_format' && $operation == 'use') {
+    return AccessResult::neutral();
+  }
 
   $locked = \Drupal::service('lightning_preview.workspace_lock')
     ->isEntityLocked($entity);

@@ -11,12 +11,11 @@ use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Exception\ExpectationException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Drupal\DrupalExtension\Context\DrupalSubContextBase;
-use Drupal\DrupalExtension\Context\DrupalSubContextInterface;
 
 /**
  * Sub context for Lightning step definitions.
  */
-class LightningSubContext extends DrupalSubContextBase implements DrupalSubContextInterface {
+class LightningSubContext extends DrupalSubContextBase {
 
   /**
    * The Mink context.

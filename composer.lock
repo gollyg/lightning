@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "430dd97fa2331cdf694b5fc3109538b1",
-    "content-hash": "8aa335ea30485b3d4c548016f595011e",
+    "hash": "9bfea872e991d7d3e76d1551e6942612",
+    "content-hash": "d6d7d3eed104df0fd513c910c83b684b",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1747,17 +1747,11 @@
         },
         {
             "name": "drupal/replication",
-            "version": "8.1.0-alpha3",
+            "version": "dev-8.x-1.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupal.org/project/replication.git",
-                "reference": "d9ee2b0180745992a0e1ff53eead7145fa8cdd6e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/replication-8.x-1.0-alpha3.zip",
-                "reference": null,
-                "shasum": null
+                "reference": "6361d76da3571301f679e3cea81c5b6f4a6f8b50"
             },
             "require": {
                 "drupal/core": "8.*",
@@ -1767,15 +1761,18 @@
             "extra": {
                 "branch-alias": {
                     "dev-8.x-1.x": "8.1.x-dev"
+                },
+                "patches_applied": {
+                    "2814055 - Allow modules to react to replication events": "https://www.drupal.org/files/issues/2814055-2.patch"
                 }
             },
             "notification-url": "https://packagist.drupal-composer.org/downloads/",
             "license": [
                 "GPL-2.0+"
             ],
-            "description": "Provides services and entities types so assist with and log content replication.",
+            "description": "Provides services and entities types to assist with and log content replication.",
             "homepage": "http://drupal.org/project/replication",
-            "time": "2016-08-05 08:29:46"
+            "time": "2016-10-05 06:09:24"
         },
         {
             "name": "drupal/scheduled_updates",
@@ -1969,17 +1966,11 @@
         },
         {
             "name": "drupal/workspace",
-            "version": "8.1.0-alpha2",
+            "version": "dev-8.x-1.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupal.org/project/workspace",
-                "reference": "47aa21574eac7b252c8f4c5f8fe348885f39a70b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/workspace-8.x-1.0-alpha2.zip",
-                "reference": null,
-                "shasum": null
+                "reference": "6b21cbeada234f6bfb0e3ca24ddd11033578c9ff"
             },
             "require": {
                 "drupal/core": "8.*",
@@ -1993,7 +1984,6 @@
                     "dev-8.x-1.x": "8.1.x-dev"
                 },
                 "patches_applied": {
-                    "Megapatch 8.x-1.0-alpha2 to 6b21cbe": "workspace--8.x-1.0-alpha2--6b21cbe.patch",
                     "2791789 - Workspace should report conflicts before replication": "https://www.drupal.org/files/issues/2791789_25.patch"
                 }
             },
@@ -2006,7 +1996,7 @@
             "keywords": [
                 "Drupal"
             ],
-            "time": "2016-06-17 15:07:17"
+            "time": "2016-10-05 06:23:30"
         },
         {
             "name": "easyrdf/easyrdf",
@@ -7231,6 +7221,8 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "drupal/workspace": 20,
+        "drupal/replication": 20,
         "drupal/entity_storage_migrate": 20
     },
     "prefer-stable": true,
