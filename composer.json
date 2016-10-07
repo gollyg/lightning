@@ -94,6 +94,12 @@
             "drupal/metatag": {
                 "2786795 - DrupalConsole integration breaks Drush":
                 "https://www.drupal.org/files/issues/metatag-deactivate_drupalconsole_services_0.patch"
+            },
+            "drupal/workspace": {
+                "Megapatch 8.x-1.0-alpha2 to 6b21cbe":
+                "workspace--8.x-1.0-alpha2--6b21cbe.patch",
+                "2791789 - Workspace should report conflicts before replication":
+                "https://www.drupal.org/files/issues/2791789_25.patch"
             }
         }
     },
