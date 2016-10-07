@@ -7,11 +7,13 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\multiversion\Entity\WorkspaceInterface;
 use Drupal\multiversion\Workspace\WorkspaceManagerInterface;
+use Drupal\replication\Event\ReplicationEvents;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * A service for dealing with workspace-related entity locking.
  */
-class WorkspaceLock {
+class WorkspaceLock implements EventSubscriberInterface {
 
   /**
    * The workspace manager.
@@ -26,6 +28,13 @@ class WorkspaceLock {
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
+
+  /**
+   * Whether or not a replication is in progress.
+   *
+   * @var bool
+   */
+  protected $isReplicating = FALSE;
 
   /**
    * WorkspaceLock constructor.
@@ -79,7 +88,8 @@ class WorkspaceLock {
    *   Whether the entity type is locked.
    */
   public function isEntityTypeLocked($entity_type) {
-    if ($entity_type == 'workspace') {
+    // Workspaces are never locked, and nothing is locked during a replication.
+    if ($entity_type == 'workspace' || $this->isReplicating) {
       return FALSE;
     }
 
@@ -100,9 +110,33 @@ class WorkspaceLock {
    *   Whether the entity is locked.
    */
   public function isEntityLocked(EntityInterface $entity) {
-    $entity_type = $entity->getEntityTypeId();
+    return $this->isEntityTypeLocked(
+      $entity->getEntityTypeId()
+    );
+  }
 
-    return $this->isEntityTypeLocked($entity_type);
+  /**
+   * Reacts before a replication begins.
+   */
+  public function preReplication() {
+    $this->isReplicating = TRUE;
+  }
+
+  /**
+   * Reacts after a replication finishes, irrespective of status.
+   */
+  public function postReplication() {
+    $this->isReplicating = FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getSubscribedEvents() {
+    return [
+      ReplicationEvents::PRE_REPLICATION => ['preReplication'],
+      ReplicationEvents::POST_REPLICATION => ['postReplication'],
+    ];
   }
 
 }
