@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "35c52cc33fb6327e43adc049eeef0649",
-    "content-hash": "ee739db1f3bb54a0316fc2b1569b6b65",
+    "hash": "73ed7c7a07479c953f5519e28db8b50a",
+    "content-hash": "a0bcd79fa4d0fed550a0b10b7ac3b61d",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1996,7 +1996,7 @@
                     "dev-8.x-1.x": "8.1.x-dev"
                 },
                 "patches_applied": {
-                    "2791789 - Workspace should report conflicts before replication": "https://www.drupal.org/files/issues/2791789-28.patch"
+                    "2791789 - Workspace should report conflicts before replication": "https://www.drupal.org/files/issues/2791789_32.patch"
                 }
             },
             "notification-url": "https://packagist.drupal-composer.org/downloads/",

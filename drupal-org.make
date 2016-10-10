@@ -135,4 +135,4 @@ projects[workspace][type] = module
 projects[workspace][download][type] = git
 projects[workspace][download][url] = https://git.drupal.org/project/workspace
 projects[workspace][download][tag] = 8.x-1.0-alpha3
-projects[workspace][patch][] = https://www.drupal.org/files/issues/2791789-28.patch
+projects[workspace][patch][] = https://www.drupal.org/files/issues/2791789_32.patch
