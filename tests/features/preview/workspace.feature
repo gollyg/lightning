@@ -1,16 +1,14 @@
 @lightning @preview @api
 Feature: Workspaces
 
+  @test
   Scenario: Locking a workspace by publishing it
-    Given I am logged in as a user with the content_manager,workspace_reviewer roles
-    When I visit "/admin/structure/workspace/2/edit"
-    And I press "Save and Publish"
-    And I visit "/admin/structure/workspace/2/activate"
-    And I press "Activate"
+    Given I am logged in as a user with the administrator role
+    And I set the "Stage" workspace to the "Published" moderation state
+    And I switch to the "Stage" workspace
     And I go to "/node/add/page"
     Then I should not see the button "Save"
-    And I visit "/admin/structure/workspace/2/edit"
-    And I press "Save and Create New Draft"
+    And I set the "Stage" workspace to the "Draft" moderation state
 
   Scenario: Configuration entities are unconditionally locked in every workspace except the Live workspace
     Given I am logged in as a user with the administrator role
@@ -103,7 +101,7 @@ Feature: Workspaces
 
   Scenario: Content is not editable after the content's workspace has been moved from unlocked to locked state
     Given I am logged in as a user with the administrator role
-    And I create a new draft of the "Stage" workspace
+    And I set the "Stage" workspace to the "Draft" moderation state
     And I switch to the "Stage" workspace
     And I visit "/node/add/page"
     And I fill in "WPS Test Title" for "Title"
@@ -118,17 +116,16 @@ Feature: Workspaces
     And I press "Save"
     And I should be on "/wps-test"
     And I should see "WPS Test Title: edited1"
-    And I publish the "Stage" workspace
+    And I set the "Stage" workspace to the "Published" moderation state
     And I am on "/wps-test"
     And I click "New draft"
     And I should see "Content cannot be modified in a locked workspace"
     Then I should not see the "Save" button
-    And I create a new draft of the "Stage" workspace
+    And I set the "Stage" workspace to the "Draft" moderation state
 
-  @test
   Scenario: Content is editable after the content's workspace has been moved from locked to unlocked
     Given I am logged in as a user with the administrator role
-    And I create a new draft of the "Stage" workspace
+    And I set the "Stage" workspace to the "Draft" moderation state
     And I switch to the "Stage" workspace
     And I visit "/node/add/page"
     And I fill in "WPS Test Title" for "Title"
@@ -143,12 +140,12 @@ Feature: Workspaces
     And I press "Save"
     And I should be on "/wps-test"
     And I should see "WPS Test Title: edited1"
-    And I publish the "Stage" workspace
+    And I set the "Stage" workspace to the "Published" moderation state
     And I am on "/wps-test"
     And I click "New draft"
     And I should see "Content cannot be modified in a locked workspace"
     And I should not see the "Save" button
-    And I create a new draft of the "Stage" workspace
+    And I set the "Stage" workspace to the "Draft" moderation state
     And I am on "/wps-test"
     And I click "New draft"
     And I fill in "WPS Test Title: edited2" for "Title"

@@ -94,29 +94,19 @@ class PreviewSubContext extends DrupalSubContextBase {
   }
 
   /**
-   * Sets a workspace's moderation state to Published.
+   * Sets a workspace's moderation state.
    *
    * @param string $workspace
-   *   The human-readable name of the workspace to publish.
+   *   The workspace whose moderation state should be set.
+   * @param string $state
+   *   The moderation state to set the workspace to.
    *
-   * @When I publish the :workspace workspace
+   * @When I set the :workspace workspace to the :state moderation state
    */
-  public function publishWorkspace($workspace) {
+  public function setWorkspaceModerationState($workspace, $state) {
     $this->navigateToWorkspaceConfig($workspace);
-    $this->minkContext->pressButton('Save and Publish');
-  }
-
-  /**
-   * Creates a new draft of a workspace.
-   *
-   * @param string $workspace
-   *   The human-readable name of the workspace that should have a new draft.
-   *
-   * @When I create a new draft of the :workspace workspace
-   */
-  public function createNewWorkspaceDraft($workspace) {
-    $this->navigateToWorkspaceConfig($workspace);
-    $this->minkContext->pressButton('Save and Create New Draft');
+    $this->minkContext->selectOption('Moderation state', $state);
+    $this->minkContext->pressButton('Save');
   }
 
 }

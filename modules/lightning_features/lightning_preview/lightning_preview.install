@@ -27,6 +27,7 @@ function lightning_preview_install() {
     ->setThirdPartySetting('workbench_moderation', 'default_moderation_state', 'draft')
     ->setThirdPartySetting('workbench_moderation', 'locked_states', [
       'archived',
+      'needs_review',
       'published',
     ])
     ->save();
