@@ -97,7 +97,7 @@
             },
             "drupal/workspace": {
                 "2791789 - Workspace should report conflicts before replication":
-                "https://www.drupal.org/files/issues/2791789-28.patch"
+                "https://www.drupal.org/files/issues/2791789_32.patch"
             },
             "drupal/replication": {
                 "2814055 - Allow modules to react to replication events":
@@ -129,8 +129,8 @@
         "drupal/token": "^8.1.0",
         "drupal/pathauto": "^8.1.0",
         "drupal/multiversion": "8.1.0-alpha10",
-        "drupal/workspace": "dev-8.x-1.x",
-        "drupal/replication": "dev-8.x-1.x",
+        "drupal/workspace": "8.1.0-alpha3",
+        "drupal/replication": "8.1.0-alpha4",
         "drupal/entity_storage_migrate": "dev-8.x-1.x",
         "drupal/key_value": "^8.1.0",
         "drupal/entity_browser": "8.1.0-alpha9",
