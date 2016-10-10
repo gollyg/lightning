@@ -109,4 +109,14 @@ class PreviewSubContext extends DrupalSubContextBase {
     $this->minkContext->pressButton('Save');
   }
 
+  /**
+   * Pulls changes from the active workspace's upstream.
+   *
+   * @When I pull changes from upstream
+   */
+  public function pullFromUpstream() {
+    $this->minkContext->clickLink('Update current workspace from upstream');
+    $this->minkContext->pressButton('Confirm');
+  }
+
 }

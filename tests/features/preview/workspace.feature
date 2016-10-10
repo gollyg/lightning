@@ -89,7 +89,7 @@ Feature: Workspaces
     And the "Stage" checkbox should not be checked
     Then the "Live" checkbox should be checked
 
-  @cleanup
+  @cleanup @at
   Scenario: Content is not editable after the content's workspace has been moved from unlocked to locked state
     Given I am logged in as a user with the administrator role
     And I set the "Stage" workspace to the "Draft" moderation state
@@ -145,3 +145,33 @@ Feature: Workspaces
     And I press "Save"
     And I should be on "/wps-test-3"
     Then I should see "WPS Test Title: edited2"
+
+  @test
+  Scenario: Cause a conflict
+    Given users:
+      | name | mail          | roles         |
+      | Foo  | foo@localhost | administrator |
+    And I am logged in as Foo
+    And I switch to the "Live" workspace
+    And I visit "/node/add/page"
+    And I fill in "WPS Test 4" for "Title"
+    And I press "Save"
+    And I switch to the "Stage" workspace
+    And I pull changes from upstream
+    And I should see "Stage has been updated with content from Live"
+    And I switch to the "Stage" workspace
+    And I visit "/admin/content"
+    And I click "WPS Test 4"
+    And I click "Edit draft"
+    And I fill in "edit-title-0-value" with "This was edited on Stage"
+    And I press "Save"
+    And I switch to the "Live" workspace
+    And I visit "/admin/content"
+    And I click "WPS Test 4"
+    And I click "Edit draft"
+    And I fill in "edit-title-0-value" with "This was edited on Live"
+    And I press the "Save" Button
+    And I navigate to the "Stage" workspace config form
+    And I select "Published" from "Moderation state"
+    And I press "Save"
+    Then I should see "Pushing changes to Live may result in unexpected behavior or data loss, and cannot be undone"
