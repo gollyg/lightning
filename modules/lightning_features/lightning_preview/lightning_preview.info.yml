@@ -5,7 +5,6 @@ description: Preview everything before you publish.
 package: Lightning (Experimental)
 experimental: true
 dependencies:
-  - workspace
-  - workbench_moderation
-  - migrate
+  - lightning_workflow
   - migrate_drupal
+  - workspace
