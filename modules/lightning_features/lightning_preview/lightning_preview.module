@@ -86,9 +86,15 @@ function lightning_preview_entity_access(EntityInterface $entity, $operation, Ac
   if ($operation == 'view') {
     return AccessResult::neutral();
   }
+
   // Allow filter formats to be used like normal.
   if ($entity->getEntityTypeId() == 'filter_format' && $operation == 'use') {
     return AccessResult::neutral();
+  }
+
+  // The live workspace is not editable under any circumstances.
+  if ($entity instanceof WorkspaceInterface && $operation == 'update' && $entity->getMachineName() == 'live') {
+    return AccessResult::forbidden('The live workspace can never be edited.');
   }
 
   $locked = \Drupal::service('lightning_preview.workspace_lock')
