@@ -12,9 +12,28 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\lightning_preview\Exception\EntityLockedException;
+use Drupal\multiversion\Entity\WorkspaceInterface;
 use Drupal\multiversion\Entity\WorkspaceType;
 use Drupal\user\Entity\Role;
 use Drupal\workbench_moderation\ModerationStateTransitionInterface as StateTransitionInterface;
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function lightning_preview_module_implements_alter(array &$implementions, $hook) {
+  $module = 'lightning_preview';
+
+  // Workbench Moderation's implementation of hook_entity_presave() screws up
+  // our workspace revisioning logic, so our implementation needs to run after
+  // it. Thus, we need to unset, then re-set, our implementation to bump it to
+  // the end of the list. We can ice this once we've ditched Workbench
+  // Moderation in favor of Content Moderation.
+  if ($hook == 'entity_presave') {
+    $group = $implementions[$module];
+    unset($implementions[$module]);
+    $implementions[$module] = $group;
+  }
+}
 
 /**
  * Implements hook_ENTITY_TYPE_insert().
@@ -75,6 +94,14 @@ function lightning_preview_entity_presave(EntityInterface $entity) {
 
   if ($locked) {
     throw new EntityLockedException($entity);
+  }
+  // Workspaces are revisionable only because they must be moderatable, and
+  // moderatable things MUST be revisionable. As far as the user is concerned,
+  // though, the workspaces are NOT revisionable -- there's no real concept
+  // of 'versions' of a workspace -- so the latest revision should always be
+  // the default one, and that's that.
+  elseif ($entity instanceof WorkspaceInterface && $entity->isNewRevision()) {
+    $entity->isDefaultRevision(TRUE);
   }
 }
 
