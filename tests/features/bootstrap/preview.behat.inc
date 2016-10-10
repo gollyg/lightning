@@ -38,7 +38,7 @@ class PreviewSubContext extends DrupalSubContextBase {
   }
 
   /**
-   * Asserts that a WBM state is Locked
+   * Asserts that a WBM state is Locked.
    *
    * @param string $state
    *   The WBM state to check.
@@ -51,7 +51,7 @@ class PreviewSubContext extends DrupalSubContextBase {
   }
 
   /**
-   * Asserts that a WBM state is not Locked
+   * Asserts that a WBM state is not Locked.
    *
    * @param string $state
    *   The WBM state to check.
@@ -67,7 +67,7 @@ class PreviewSubContext extends DrupalSubContextBase {
    * Switches to a given workspace.
    *
    * @param string $workspace
-   *   The human-readable label of the workspace
+   *   The human-readable label of the workspace.
    *
    * @When I switch to the :workspace workspace
    */
@@ -77,7 +77,7 @@ class PreviewSubContext extends DrupalSubContextBase {
   }
 
   /**
-   * Navigates to a given workspace's configuration page
+   * Navigates to a given workspace's configuration page.
    *
    * @When I navigate to the :workspace workspace config form
    */
