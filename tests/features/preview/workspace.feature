@@ -102,14 +102,57 @@ Feature: Workspaces
     # * Can we do a "switch to non-live & non-locked workspace" step?
 
   Scenario: Content is not editable after the content's workspace has been moved from unlocked to locked state
-    # * Switch to Live workspace
-    # * Edit content
-    # * Switch to Stage workspace
-    # * Update workspace from live (@STEP)
-    # * Create (published) content on Stage
-    # * Publish Stage
-    # * Switch to (ensure currently on?) Workspace stage
-    # * Assert: can't edit content
+    Given I am logged in as a user with the administrator role
+    And I create a new draft of the "Stage" workspace
+    And I switch to the "Stage" workspace
+    And I visit "/node/add/page"
+    And I fill in "WPS Test Title" for "Title"
+    And I select "Published" from "Moderation state"
+    And I fill in "/wps-test" for "URL alias"
+    And I press "Save"
+    And I queue the latest "node" entity for deletion
+    And I am on "/wps-test"
+    And I click "New draft"
+    And I fill in "WPS Test Title: edited1" for "Title"
+    And I select "Published" from "Moderation state"
+    And I press "Save"
+    And I should be on "/wps-test"
+    And I should see "WPS Test Title: edited1"
+    And I publish the "Stage" workspace
+    And I am on "/wps-test"
+    And I click "New draft"
+    And I should see "Content cannot be modified in a locked workspace"
+    Then I should not see the "Save" button
+    And I create a new draft of the "Stage" workspace
 
+  @test
   Scenario: Content is editable after the content's workspace has been moved from locked to unlocked
-    # Basically reverse^^
+    Given I am logged in as a user with the administrator role
+    And I create a new draft of the "Stage" workspace
+    And I switch to the "Stage" workspace
+    And I visit "/node/add/page"
+    And I fill in "WPS Test Title" for "Title"
+    And I select "Published" from "Moderation state"
+    And I fill in "/wps-test" for "URL alias"
+    And I press "Save"
+    And I queue the latest "node" entity for deletion
+    And I am on "/wps-test"
+    And I click "New draft"
+    And I fill in "WPS Test Title: edited1" for "Title"
+    And I select "Published" from "Moderation state"
+    And I press "Save"
+    And I should be on "/wps-test"
+    And I should see "WPS Test Title: edited1"
+    And I publish the "Stage" workspace
+    And I am on "/wps-test"
+    And I click "New draft"
+    And I should see "Content cannot be modified in a locked workspace"
+    And I should not see the "Save" button
+    And I create a new draft of the "Stage" workspace
+    And I am on "/wps-test"
+    And I click "New draft"
+    And I fill in "WPS Test Title: edited2" for "Title"
+    And I select "Published" from "Moderation state"
+    And I press "Save"
+    And I should be on "/wps-test"
+    Then I should see "WPS Test Title: edited2"

@@ -93,4 +93,30 @@ class PreviewSubContext extends DrupalSubContextBase {
     throw new Exception();
   }
 
+  /**
+   * Sets a workspace's moderation state to Published.
+   *
+   * @param string $workspace
+   *   The human-readable name of the workspace to publish.
+   *
+   * @When I publish the :workspace workspace
+   */
+  public function publishWorkspace($workspace) {
+    $this->navigateToWorkspaceConfig($workspace);
+    $this->minkContext->pressButton('Save and Publish');
+  }
+
+  /**
+   * Creates a new draft of a workspace.
+   *
+   * @param string $workspace
+   *   The human-readable name of the workspace that should have a new draft.
+   *
+   * @When I create a new draft of the :workspace workspace
+   */
+  public function createNewWorkspaceDraft($workspace) {
+    $this->navigateToWorkspaceConfig($workspace);
+    $this->minkContext->pressButton('Save and Create New Draft');
+  }
+
 }
