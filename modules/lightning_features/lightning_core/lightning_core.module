@@ -11,6 +11,22 @@ use Drupal\node\NodeTypeInterface;
 use Drupal\user\Entity\Role;
 
 /**
+ * Puts an associative array into an arbitrary order.
+ *
+ * @param array $values
+ *   The array to reorder.
+ * @param array $keys
+ *   The keys, in their desired order.
+ */
+function array_reorder(array &$values, array $keys) {
+  $keys = array_values($keys);
+
+  uksort($values, function ($a, $b) use ($keys) {
+    return array_search($a, $keys) - array_search($b, $keys);
+  });
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  */
 function lightning_core_form_system_modules_alter(array &$form) {
