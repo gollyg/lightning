@@ -99,7 +99,6 @@ Feature: Workspaces
     And I select "Published" from "Moderation state"
     And I fill in "/wps-test-2" for "URL alias"
     And I press "Save"
-    And I queue the latest "node" entity for deletion
     And I am on "/wps-test-2"
     And I click "New draft"
     And I fill in "WPS Test Title: edited1" for "Title"
@@ -113,6 +112,15 @@ Feature: Workspaces
     And I should see "Content cannot be modified in a locked workspace"
     Then I should not see the "Save" button
     And I set the "Stage" workspace to the "Draft" moderation state
+    And I visit "/admin/content"
+    And I click "WPS Test Title: edited1"
+    And I click "Delete"
+    And I press "Delete"
+    And I switch to the "Live" workspace
+    And I visit "/admin/content"
+    And I click "WPS Test Title: edited1"
+    And I click "Delete"
+    And I press "Delete"
 
   @cleanup
   Scenario: Content is editable after the content's workspace has been moved from locked to unlocked
