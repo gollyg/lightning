@@ -75,12 +75,18 @@ Feature: Workspaces
     And I select "Published" from "Moderation state"
     And I fill in "/wps-test-1" for "URL alias"
     And I press "Save"
-    And I queue the latest "node" entity for deletion
     And I am on "/wps-test-1"
     And the response status code should be 200
-    And I visit "/user/logout"
+    And I am an anonymous user
     And I am on "/wps-test-1"
     Then the response status code should be 404
+    And I am on "/user/login"
+    And I am logged in as a user with the administrator role
+    And I switch to the "Stage" workspace
+    And I visit "/admin/content"
+    And I click "WPS Test Title"
+    And I click "Delete"
+    And I press "Delete"
 
   Scenario: The Stage workspace that ships with Lightning has Live as its Upstream
     Given I am logged in as a user with the administrator role
