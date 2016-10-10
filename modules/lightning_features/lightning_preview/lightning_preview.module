@@ -18,6 +18,18 @@ use Drupal\user\Entity\Role;
 use Drupal\workbench_moderation\ModerationStateTransitionInterface as StateTransitionInterface;
 
 /**
+ * Implements hook_toolbar_alter().
+ */
+function lightning_preview_toolbar_alter(array &$items) {
+  if (isset($items['workspace_update'])) {
+    $items['workspace_update']['tab']['#access'] = \Drupal::service('workspace.manager')
+        ->getActiveWorkspace()
+        ->get('upstream')
+        ->isEmpty() == FALSE;
+  }
+}
+
+/**
  * Implements hook_module_implements_alter().
  */
 function lightning_preview_module_implements_alter(array &$implementions, $hook) {
