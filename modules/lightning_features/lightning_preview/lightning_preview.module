@@ -30,8 +30,8 @@ function lightning_preview_form_workspace_basic_edit_form_alter(array &$form, Fo
   if (isset($form['moderation_state']) && $mod_info->isModeratedEntityForm($form_object)) {
     lightning_workflow_alter_moderation_state($form['moderation_state']['widget'][0]);
 
-    // Normally this would say 'this piece of content', which is weirder than
-    // Nicolas Cage after gargling a bucket of LSD.
+    // Normally this would say 'this piece of content', which is weird if
+    // you're editing a workspace.
     $form['moderation_state']['widget'][0]['#description'] = t('The moderation state of this workspace.');
   }
 }
@@ -40,6 +40,8 @@ function lightning_preview_form_workspace_basic_edit_form_alter(array &$form, Fo
  * Implements hook_entity_type_alter().
  */
 function lightning_preview_entity_type_alter(array &$entity_types) {
+  // Our list builder displays the current moderation state for each workspace.
+  // @TODO Replace this with a view.
   $entity_types['workspace']->setHandlerClass('list_builder', WorkspaceListBuilder::class);
 }
 
@@ -48,6 +50,10 @@ function lightning_preview_entity_type_alter(array &$entity_types) {
  */
 function lightning_preview_toolbar_alter(array &$items) {
   if (isset($items['workspace_update'])) {
+    // Do not show the 'Update' toolbar button if the active workspace has no
+    // upstream. Workspaces are required to have an upstream, but in Lightning,
+    // the Live workspace does not -- because in a single-site setup, what
+    // exactly sits upstream from the live site?
     $items['workspace_update']['tab']['#access'] = \Drupal::service('workspace.manager')
         ->getActiveWorkspace()
         ->get('upstream')
@@ -58,18 +64,17 @@ function lightning_preview_toolbar_alter(array &$items) {
 /**
  * Implements hook_module_implements_alter().
  */
-function lightning_preview_module_implements_alter(array &$implementions, $hook) {
+function lightning_preview_module_implements_alter(array &$implementations, $hook) {
   $module = 'lightning_preview';
 
   // Workbench Moderation's implementation of hook_entity_presave() screws up
   // our workspace revisioning logic, so our implementation needs to run after
-  // it. Thus, we need to unset, then re-set, our implementation to bump it to
-  // the end of the list. We can ice this once we've ditched Workbench
-  // Moderation in favor of Content Moderation.
+  // it. We can ice this once we've ditched Workbench Moderation in favor of
+  // Content Moderation.
   if ($hook == 'entity_presave') {
-    $group = $implementions[$module];
-    unset($implementions[$module]);
-    $implementions[$module] = $group;
+    $order = array_diff(array_keys($implementations), [$module]);
+    array_push($order, $module);
+    array_reorder($implementations, $order);
   }
 }
 
@@ -167,6 +172,8 @@ function lightning_preview_entity_predelete(EntityInterface $entity) {
 function lightning_preview_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
   $form_object = $form_state->getFormObject();
 
+  // If this is the form for a locked entity, disable all the buttons and set
+  // a stern message.
   if ($form_object instanceof EntityFormInterface) {
     $entity = $form_object->getEntity();
 
@@ -190,6 +197,8 @@ function lightning_preview_form_alter(array &$form, FormStateInterface $form_sta
  *
  * @return array
  *   The renderable element with all buttons (at all levels) disabled.
+ *
+ * @internal
  */
 function lightning_preview_disable_buttons(array $element) {
   if (isset($element['#type'])) {
@@ -245,7 +254,7 @@ function lightning_preview_form_moderation_state_edit_form_alter(array &$form, F
  */
 function lightning_preview_save_locked_state(array &$form, FormStateInterface $form_state) {
   $workspace_type = WorkspaceType::load('basic');
-  $locked_states = $workspace_type->getThirdPartySetting('workbench_moderation', 'locked_states');
+  $locked_states = $workspace_type->getThirdPartySetting('workbench_moderation', 'locked_states', []);
   $state_id = $form_state->getFormObject()->getEntity()->id();
 
   if ($form_state->getValue('lock_workspace')) {
