@@ -19,6 +19,24 @@ use Drupal\user\Entity\Role;
 use Drupal\workbench_moderation\ModerationStateTransitionInterface as StateTransitionInterface;
 
 /**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function lightning_preview_form_workspace_basic_edit_form_alter(array &$form, FormStateInterface $form_state) {
+  $form_object = $form_state->getFormObject();
+
+  /** @var \Drupal\workbench_moderation\ModerationInformation $mod_info */
+  $mod_info = \Drupal::service('workbench_moderation.moderation_information');
+
+  if (isset($form['moderation_state']) && $mod_info->isModeratedEntityForm($form_object)) {
+    lightning_workflow_alter_moderation_state($form['moderation_state']['widget'][0]);
+
+    // Normally this would say 'this piece of content', which is weirder than
+    // Nicolas Cage after gargling a bucket of LSD.
+    $form['moderation_state']['widget'][0]['#description'] = t('The moderation state of this workspace.');
+  }
+}
+
+/**
  * Implements hook_entity_type_alter().
  */
 function lightning_preview_entity_type_alter(array &$entity_types) {
