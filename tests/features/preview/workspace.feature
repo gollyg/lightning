@@ -1,7 +1,6 @@
 @lightning @preview @api
 Feature: Workspaces
 
-  @test
   Scenario: Locking a workspace by publishing it
     Given I am logged in as a user with the administrator role
     And I set the "Stage" workspace to the "Published" moderation state
@@ -67,19 +66,20 @@ Feature: Workspaces
     And I visit "/wps-test"
     Then I should see "WPS Test Title"
 
+  @cleanup
   Scenario: The Stage workspace that ships with Lightning is not the Live workspace
     Given I am logged in as a user with the administrator role
     When I switch to the "Stage" workspace
     And I visit "/node/add/page"
     And I fill in "WPS Test Title" for "Title"
     And I select "Published" from "Moderation state"
-    And I fill in "/wps-test" for "URL alias"
+    And I fill in "/wps-test-1" for "URL alias"
     And I press "Save"
     And I queue the latest "node" entity for deletion
-    And I am on "/wps-test"
+    And I am on "/wps-test-1"
     And the response status code should be 200
     And I visit "/user/logout"
-    And I am on "/wps-test"
+    And I am on "/wps-test-1"
     Then the response status code should be 404
 
   Scenario: The Stage workspace that ships with Lightning has Live as its Upstream
@@ -89,16 +89,7 @@ Feature: Workspaces
     And the "Stage" checkbox should not be checked
     Then the "Live" checkbox should be checked
 
-  Scenario: Privileged users can create content on the Live workspace
-    # * switch to the live workspace step
-
-  Scenario: Privileged users can create content on a non-live and non-locked workspace
-    # * Switch to the default stage workspace (but then we really need to test if the Default Stage workspace is none-live
-    #   and non-locked - which is why we have the firt four scenarios here)
-
-  Scenario: Privileged users can not create content on a workspace in the Locked state
-    # * Can we do a "switch to non-live & non-locked workspace" step?
-
+  @cleanup
   Scenario: Content is not editable after the content's workspace has been moved from unlocked to locked state
     Given I am logged in as a user with the administrator role
     And I set the "Stage" workspace to the "Draft" moderation state
@@ -106,23 +97,24 @@ Feature: Workspaces
     And I visit "/node/add/page"
     And I fill in "WPS Test Title" for "Title"
     And I select "Published" from "Moderation state"
-    And I fill in "/wps-test" for "URL alias"
+    And I fill in "/wps-test-2" for "URL alias"
     And I press "Save"
     And I queue the latest "node" entity for deletion
-    And I am on "/wps-test"
+    And I am on "/wps-test-2"
     And I click "New draft"
     And I fill in "WPS Test Title: edited1" for "Title"
     And I select "Published" from "Moderation state"
     And I press "Save"
-    And I should be on "/wps-test"
+    And I should be on "/wps-test-2"
     And I should see "WPS Test Title: edited1"
     And I set the "Stage" workspace to the "Published" moderation state
-    And I am on "/wps-test"
+    And I am on "/wps-test-2"
     And I click "New draft"
     And I should see "Content cannot be modified in a locked workspace"
     Then I should not see the "Save" button
     And I set the "Stage" workspace to the "Draft" moderation state
 
+  @cleanup
   Scenario: Content is editable after the content's workspace has been moved from locked to unlocked
     Given I am logged in as a user with the administrator role
     And I set the "Stage" workspace to the "Draft" moderation state
@@ -130,26 +122,26 @@ Feature: Workspaces
     And I visit "/node/add/page"
     And I fill in "WPS Test Title" for "Title"
     And I select "Published" from "Moderation state"
-    And I fill in "/wps-test" for "URL alias"
+    And I fill in "/wps-test-3" for "URL alias"
     And I press "Save"
     And I queue the latest "node" entity for deletion
-    And I am on "/wps-test"
+    And I am on "/wps-test-3"
     And I click "New draft"
     And I fill in "WPS Test Title: edited1" for "Title"
     And I select "Published" from "Moderation state"
     And I press "Save"
-    And I should be on "/wps-test"
+    And I should be on "/wps-test-3"
     And I should see "WPS Test Title: edited1"
     And I set the "Stage" workspace to the "Published" moderation state
-    And I am on "/wps-test"
+    And I am on "/wps-test-3"
     And I click "New draft"
     And I should see "Content cannot be modified in a locked workspace"
     And I should not see the "Save" button
     And I set the "Stage" workspace to the "Draft" moderation state
-    And I am on "/wps-test"
+    And I am on "/wps-test-3"
     And I click "New draft"
     And I fill in "WPS Test Title: edited2" for "Title"
     And I select "Published" from "Moderation state"
     And I press "Save"
-    And I should be on "/wps-test"
+    And I should be on "/wps-test-3"
     Then I should see "WPS Test Title: edited2"
